@@ -24,7 +24,7 @@ func Intcode(program []int, input []int) []int {
 
 // returns false if program finished
 func Opcode(program []int, counter *int, input []int, inputCounter *int, output []int) bool {
-	fmt.Println("Counter: ", *counter, "Next word: ", program[*counter:*counter+4])
+	// fmt.Println("Counter: ", *counter, "Next word: ", program[*counter:*counter+4])
 	opcode, modes := DecodeOpcode(program[*counter])
 	*counter++
 	switch opcode {

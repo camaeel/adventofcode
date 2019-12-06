@@ -74,7 +74,7 @@ func TestIntcode5(t *testing.T) {
 	tmpProg := CloneProgram(program)
 	input := []int{200}
 	expected := []int{200, 0, 4, 0, 99}
-	expectedOutput := make([]int, 0)
+	expectedOutput := []int{200}
 	output := Intcode(tmpProg, input)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
