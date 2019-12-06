@@ -32,14 +32,14 @@ func Opcode(program []int, counter *int, input []int, inputCounter *int, output 
 	case 1:
 		op1 := GetOperand(program, counter, modes[0])
 		*counter++
-		op2 := GetOperand(program, counter, modes[0])
+		op2 := GetOperand(program, counter, modes[1])
 		*counter++
 		SetOperand(program, counter, op1+op2)
 		*counter++
 	case 2:
 		op1 := GetOperand(program, counter, modes[0])
 		*counter++
-		op2 := GetOperand(program, counter, modes[0])
+		op2 := GetOperand(program, counter, modes[1])
 		*counter++
 		SetOperand(program, counter, op1*op2)
 		*counter++
