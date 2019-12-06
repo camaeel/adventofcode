@@ -57,6 +57,50 @@ func Opcode(program []int, counter *int, input []int, inputCounter *int, output 
 		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+2], ", output=", op1)
 		*counter++
 		*output = append(*output, op1)
+	case 5:
+		op1 := GetOperand(program, counter, modes[0])
+		*counter++
+		op2 := GetOperand(program, counter, modes[1])
+		*counter++
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+3], ", op1=", op1, " op2=", op2)
+		if op1 != 0 {
+			*counter = op2
+		}
+	case 6:
+		op1 := GetOperand(program, counter, modes[0])
+		*counter++
+		op2 := GetOperand(program, counter, modes[1])
+		*counter++
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+3], ", op1=", op1, " op2=", op2)
+		if op1 == 0 {
+			*counter = op2
+		}
+	case 7:
+		// is less than: if the first parameter is less than the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+		op1 := GetOperand(program, counter, modes[0])
+		*counter++
+		op2 := GetOperand(program, counter, modes[1])
+		*counter++
+		val := 0
+		if op1 < op2 {
+			val = 1
+		}
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, " result=", val)
+		SetOperand(program, counter, val)
+		*counter++
+	case 8:
+		// if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+		op1 := GetOperand(program, counter, modes[0])
+		*counter++
+		op2 := GetOperand(program, counter, modes[1])
+		*counter++
+		val := 0
+		if op1 == op2 {
+			val = 1
+		}
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, " result=", val)
+		SetOperand(program, counter, val)
+		*counter++
 	default:
 		panic("Unknown opcode: " + strconv.Itoa(opcode) + ", at counter: " + strconv.Itoa(*counter-1))
 	}

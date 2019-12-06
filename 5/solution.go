@@ -17,18 +17,12 @@ func main() {
 	result := intcode.Intcode(tmpProg, input)
 	fmt.Println("Resulting program part 1: ", result)
 
-	// output := intcode.Intcode(tmpProg, input)
+	tmpProg2 := intcode.CloneProgram(program)
 
-	// fmt.Println("Output: ", output)
+	input2 := []int{5}
 
-	// for noun := 0; noun < 100; noun++ {
-	// 	for verb := 0; verb < 100; verb++ {
-	// 		if GetResult(program, noun, verb) == 19690720 {
-	// 			fmt.Println("Got: ", 19690720, ", verb= ", verb, ", noun=", noun)
-	// 			fmt.Println("Rsult : ", noun*100+verb)
-	// 		}
-	// 	}
-	// }
+	result2 := intcode.Intcode(tmpProg2, input2)
+	fmt.Println("Resulting program part 2: ", result2)
 }
 
 func check(e error) {
