@@ -1,46 +1,35 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strconv"
-	"strings"
-
 	"./intcode"
+	"fmt"
 )
 
 func main() {
-	program := ReadProgram("input.txt")
+	program := intcode.ReadProgram("input.txt")
 	fmt.Println("Input program: ", program)
 	//debug settings
 
-	tmpProg := CloneProgram(program)
-	tmpProg[1] = 12
-	tmpProg[2] = 2
+	tmpProg := intcode.CloneProgram(program)
 
-	result := intcode.Intcode(tmpProg)
+	input := []int{1}
+
+	result := intcode.Intcode(tmpProg, input)
 	fmt.Println("Input program: ", program)
 	fmt.Println("Resulting program part 1: ", result)
 
-	for noun := 0; noun < 100; noun++ {
-		for verb := 0; verb < 100; verb++ {
-			if GetResult(program, noun, verb) == 19690720 {
-				fmt.Println("Got: ", 19690720, ", verb= ", verb, ", noun=", noun)
-				fmt.Println("Rsult : ", noun*100+verb)
-			}
-		}
-	}
-}
+	output := intcode.Intcode(tmpProg, input)
 
-func GetResult(program []int, noun int, verb int) int {
-	tmpProg := make([]int, len(program))
-	copy(tmpProg, program)
-	tmpProg[1] = noun
-	tmpProg[2] = verb
-	intcode.Intcode(tmpProg)
+	fmt.Println("Output: ", output)
 
-	return tmpProg[0]
+	// for noun := 0; noun < 100; noun++ {
+	// 	for verb := 0; verb < 100; verb++ {
+	// 		if GetResult(program, noun, verb) == 19690720 {
+	// 			fmt.Println("Got: ", 19690720, ", verb= ", verb, ", noun=", noun)
+	// 			fmt.Println("Rsult : ", noun*100+verb)
+	// 		}
+	// 	}
+	// }
 }
 
 func check(e error) {
