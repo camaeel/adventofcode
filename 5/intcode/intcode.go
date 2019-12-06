@@ -15,7 +15,7 @@ func Intcode(program []int, input []int) []int {
 	inputCounter := 0
 
 	for {
-		if Opcode(program, &counter, input, &inputCounter, output) == false {
+		if Opcode(program, &counter, input, &inputCounter, &output) == false {
 			return output
 		}
 	}
@@ -23,12 +23,13 @@ func Intcode(program []int, input []int) []int {
 }
 
 // returns false if program finished
-func Opcode(program []int, counter *int, input []int, inputCounter *int, output []int) bool {
-	// fmt.Println("Counter: ", *counter, "Next word: ", program[*counter:*counter+4])
+func Opcode(program []int, counter *int, input []int, inputCounter *int, output *[]int) bool {
 	opcode, modes := DecodeOpcode(program[*counter])
+	opCounter := *counter
 	*counter++
 	switch opcode {
 	case 99:
+		fmt.Println("Counter: ", opCounter, "Next opcode: ", opcode)
 		return false
 	case 1:
 		op1 := GetOperand(program, counter, modes[0])
@@ -36,6 +37,7 @@ func Opcode(program []int, counter *int, input []int, inputCounter *int, output 
 		op2 := GetOperand(program, counter, modes[1])
 		*counter++
 		SetOperand(program, counter, op1+op2)
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, ", result: ", op1+op2)
 		*counter++
 	case 2:
 		op1 := GetOperand(program, counter, modes[0])
@@ -43,18 +45,24 @@ func Opcode(program []int, counter *int, input []int, inputCounter *int, output 
 		op2 := GetOperand(program, counter, modes[1])
 		*counter++
 		SetOperand(program, counter, op1*op2)
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, ", result: ", op1*op2)
 		*counter++
 	case 3:
 		SetOperand(program, counter, input[*inputCounter])
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+2], ", input=", input[*inputCounter])
 		*inputCounter++
 		*counter++
 	case 4:
 		op1 := GetOperand(program, counter, modes[0])
+		fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", program[opCounter:opCounter+2], ", output=", op1)
 		*counter++
-		output = append(output, op1)
+		*output = append(*output, op1)
 	default:
 		panic("Unknown opcode: " + strconv.Itoa(opcode) + ", at counter: " + strconv.Itoa(*counter-1))
 	}
+
+	fmt.Println("    program[223]=", program[223])
+
 	return true
 }
 

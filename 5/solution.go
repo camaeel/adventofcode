@@ -15,12 +15,11 @@ func main() {
 	input := []int{1}
 
 	result := intcode.Intcode(tmpProg, input)
-	fmt.Println("Input program: ", program)
 	fmt.Println("Resulting program part 1: ", result)
 
-	output := intcode.Intcode(tmpProg, input)
+	// output := intcode.Intcode(tmpProg, input)
 
-	fmt.Println("Output: ", output)
+	// fmt.Println("Output: ", output)
 
 	// for noun := 0; noun < 100; noun++ {
 	// 	for verb := 0; verb < 100; verb++ {
