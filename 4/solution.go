@@ -41,13 +41,12 @@ func IsPossiblePassword(i int) bool {
 		} else if digits[i] == digits[i-1] {
 			// fmt.Println("  same")
 			same++
-			sameSatisfied = true
+
 		} else {
 			// fmt.Println("  higher than prev")
-			// if same == 3 || same == 5 {
-			// 	// fmt.Println("  illegal same - false")
-			// 	return false
-
+			if same == 2 {
+				sameSatisfied = true
+			}
 			// } else {
 			// 	// fmt.Println("  reset same")
 			// 	same = 1
@@ -56,11 +55,10 @@ func IsPossiblePassword(i int) bool {
 		}
 
 	}
-	// if same == 3 || same == 5 {
-	// 	// fmt.Println("  illegal same - false")
-	// 	return false
+	if same == 2 {
+		sameSatisfied = true
 
-	// }
+	}
 
 	return sameSatisfied
 }
