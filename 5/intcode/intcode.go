@@ -61,8 +61,6 @@ func Opcode(program []int, counter *int, input []int, inputCounter *int, output 
 		panic("Unknown opcode: " + strconv.Itoa(opcode) + ", at counter: " + strconv.Itoa(*counter-1))
 	}
 
-	fmt.Println("    program[223]=", program[223])
-
 	return true
 }
 
