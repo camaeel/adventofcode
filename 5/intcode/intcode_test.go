@@ -22,7 +22,7 @@ func TestIntcode1(t *testing.T) {
 	tmpProg := CloneProgram(program)
 	input := make([]int, 0)
 	expected := []int{2, 0, 0, 0, 99}
-	Intcode(tmpProg, input)
+	Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -35,7 +35,7 @@ func TestIntcode2(t *testing.T) {
 	tmpProg := CloneProgram(program)
 	input := make([]int, 0)
 	expected := []int{2, 3, 0, 6, 99}
-	Intcode(tmpProg, input)
+	Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -48,7 +48,7 @@ func TestIntcode3(t *testing.T) {
 	tmpProg := CloneProgram(program)
 	input := make([]int, 0)
 	expected := []int{2, 4, 4, 5, 99, 9801}
-	Intcode(tmpProg, input)
+	Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -61,7 +61,7 @@ func TestIntcode4(t *testing.T) {
 	tmpProg := CloneProgram(program)
 	input := make([]int, 0)
 	expected := []int{30, 1, 1, 4, 2, 5, 6, 0, 99}
-	Intcode(tmpProg, input)
+	Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -75,7 +75,7 @@ func TestIntcode5(t *testing.T) {
 	input := []int{200}
 	expected := []int{200, 0, 4, 0, 99}
 	expectedOutput := []int{200}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -105,7 +105,7 @@ func TestIntcode6(t *testing.T) {
 	input := []int{}
 	expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := make([]int, 0)
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	if !reflect.DeepEqual(tmpProg, expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	}
@@ -122,7 +122,7 @@ func TestIntcode7(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -139,7 +139,7 @@ func TestIntcode8(t *testing.T) {
 	input := []int{10000}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -156,7 +156,7 @@ func TestIntcode9(t *testing.T) {
 	input := []int{7}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -173,7 +173,7 @@ func TestIntcode10(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -190,7 +190,7 @@ func TestIntcode11(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -207,7 +207,7 @@ func TestIntcode12(t *testing.T) {
 	input := []int{7}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -224,7 +224,7 @@ func TestIntcode13(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -241,7 +241,7 @@ func TestIntcode14(t *testing.T) {
 	input := []int{7}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -258,7 +258,7 @@ func TestIntcodeJump1(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -275,7 +275,7 @@ func TestIntcodeJump2(t *testing.T) {
 	input := []int{0}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -292,7 +292,7 @@ func TestIntcodeJump3(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -309,7 +309,7 @@ func TestIntcodeJump4(t *testing.T) {
 	input := []int{0}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{0}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -326,7 +326,7 @@ func TestIntcodeLarge1(t *testing.T) {
 	input := []int{3}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{999}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -343,7 +343,7 @@ func TestIntcodeLarge2(t *testing.T) {
 	input := []int{8}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1000}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
@@ -360,7 +360,7 @@ func TestIntcodeLarge3(t *testing.T) {
 	input := []int{13}
 	// expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := []int{1001}
-	output := Intcode(tmpProg, input)
+	output := Intcode(tmpProg, input, false)
 	// if !reflect.DeepEqual(tmpProg, expected) {
 	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
 	// }
