@@ -37,6 +37,9 @@ func main() {
 	fmt.Println("COM is:", com)
 	result := GetChildrenOrbits(orbits, com, 0)
 	fmt.Println("Result: ", result)
+
+	result2 := GetOrbitTransfers(orbits, com, Object("YOU"), Object("SAN"))
+	fmt.Println("Result part 2: ", result2)
 }
 
 func check(e error) {
@@ -81,4 +84,41 @@ func FindChildren(orbits []Orbit, parent Object) []Object {
 	}
 
 	return result
+}
+
+func ChildrenSearch(children []Object, needle Object) bool {
+	for _, v := range children {
+		if needle == v {
+			return true
+		}
+	}
+	return false
+}
+
+func GetOrbitTransfers(orbits []Orbit, com Object, needle1 Object, needle2 Object) int {
+	path1 := FindObjectPath(orbits, com, needle1)
+	path2 := FindObjectPath(orbits, com, needle2)
+	fmt.Println("Path1:", path1)
+	fmt.Println("Path2:", path2)
+	i1 := len(path1) - 1
+	i2 := len(path2) - 1
+	for i1 > 0 && i2 > 0 && path1[i1-1] == path2[i2-1] {
+		i1--
+		i2--
+	}
+	return i1 + i2
+}
+
+func FindObjectPath(orbits []Orbit, parent Object, needle Object) []Object {
+	children := FindChildren(orbits, parent)
+	if ChildrenSearch(children, needle) {
+		return []Object{parent}
+	}
+	for _, v := range children {
+		path := FindObjectPath(orbits, v, needle)
+		if len(path) > 0 {
+			return append(path, parent)
+		}
+	}
+	return make([]Object, 0)
 }
