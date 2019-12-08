@@ -77,12 +77,21 @@ func MaxValuePart2(program []int) (int, []int) {
 
 func Amplifiers(program []int, settings []int) int {
 	result := 0
-	for i := 0; i < 5; i++ {
-		progCpy := intcode.CloneProgram(program)
-		input := []int{settings[i], result}
-		output := intcode.Intcode(progCpy, input, false)
-		result = output[0]
-		// fmt.Println("settings:", settings, ", input:", input, ", output:", output, ", result:", result)
+	numOfComputers := 5
+	computers := make([]*intcode.Intcode, numOfComputers)
+	for i := 0; i < numOfComputers; i++ {
+		computers[i] = intcode.CreateIntcode(program)
+		if i > 0 {
+			computers[i].Input = computers[i-1].Output
+		}
 	}
+	for _, v := range computers {
+		v.Run(false)
+	}
+	for i, v := range computers {
+		v.Input <- settings[i]
+	}
+	computers[0].Input <- 0
+	result = <-computers[len(computers)-1].Output
 	return result
 }
