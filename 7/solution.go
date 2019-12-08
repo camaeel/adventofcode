@@ -9,6 +9,8 @@ func main() {
 	program := intcode.ReadProgram("input.txt")
 	maxValue, maxSettings := MaxValue(program)
 	fmt.Println("max value=", maxValue, " max settings: ", maxSettings)
+	maxValuePart2, maxSettingsPart2 := MaxValuePart2(program)
+	fmt.Println("Part2: max value=", maxValuePart2, " max settings: ", maxSettingsPart2)
 }
 
 func MaxValue(program []int) (int, []int) {
@@ -58,7 +60,7 @@ func MaxValuePart2(program []int) (int, []int) {
 								for a5 := min; a5 < max; a5++ {
 									if a5 != a4 && a5 != a3 && a5 != a2 && a5 != a1 {
 										settings := []int{a1, a2, a3, a4, a5}
-										value := Amplifiers(program, settings)
+										value := AmplifiersPart2(program, settings)
 										if value > maxValue {
 											maxValue = value
 											maxSettings = settings
@@ -93,5 +95,28 @@ func Amplifiers(program []int, settings []int) int {
 	}
 	computers[0].Input <- 0
 	result = <-computers[len(computers)-1].Output
+	return result
+}
+
+func AmplifiersPart2(program []int, settings []int) int {
+	result := 0
+	numOfComputers := 5
+	computers := make([]*intcode.Intcode, numOfComputers)
+	for i := 0; i < numOfComputers; i++ {
+		computers[i] = intcode.CreateIntcode(program)
+	}
+	for i := 0; i < numOfComputers; i++ {
+		computers[(i+1)%numOfComputers].Input = computers[i].Output
+	}
+	for _, v := range computers {
+		v.Run(false)
+	}
+	for i, v := range computers {
+		v.Input <- settings[i]
+	}
+	computers[0].Input <- 0
+	computers[len(computers)-1].WaitGroup.Wait()
+	// result = <-computers[len(computers)-1].Output
+	result = computers[len(computers)-1].OutputArray[len(computers[len(computers)-1].OutputArray)-1]
 	return result
 }

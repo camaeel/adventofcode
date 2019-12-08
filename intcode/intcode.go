@@ -20,7 +20,7 @@ type Intcode struct {
 
 func CreateIntcode(program []int) *Intcode {
 	wg := sync.WaitGroup{}
-	ret := Intcode{Program: CloneProgram(program), Input: make(chan int), Output: make(chan int), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
+	ret := Intcode{Program: CloneProgram(program), Input: make(chan int, 10000), Output: make(chan int, 10000), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
 
 	return &ret
 }
