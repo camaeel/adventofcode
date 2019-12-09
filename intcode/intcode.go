@@ -59,7 +59,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		*counter++
 		op2 := comp.GetOperand(counter, modes[1])
 		*counter++
-		comp.SetOperand(counter, op1+op2)
+		comp.SetOperand(counter, modes[2], op1+op2)
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, ", result: ", op1+op2)
 		}
@@ -69,7 +69,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		*counter++
 		op2 := comp.GetOperand(counter, modes[1])
 		*counter++
-		comp.SetOperand(counter, op1*op2)
+		comp.SetOperand(counter, modes[2], op1*op2)
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, ", result: ", op1*op2)
 		}
@@ -83,7 +83,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		if debug {
 			fmt.Println("Got input")
 		}
-		comp.SetOperand(counter, input)
+		comp.SetOperand(counter, modes[0], input)
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+2], ", input=", input)
 		}
@@ -139,7 +139,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, " result=", val)
 		}
-		comp.SetOperand(counter, val)
+		comp.SetOperand(counter, modes[2], val)
 		*counter++
 	case 8:
 		// if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
@@ -154,7 +154,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+4], ", op1=", op1, " op2=", op2, " result=", val)
 		}
-		comp.SetOperand(counter, val)
+		comp.SetOperand(counter, modes[2], val)
 		*counter++
 	case 9:
 		op1 := comp.GetOperand(counter, modes[0])
@@ -176,20 +176,12 @@ func DecodeOpcode(oc int) (int, []int) {
 	return opcode, mode
 }
 
-func (comp *Intcode) SetOperand(counter *int, value int) {
-	comp.Program[comp.Program[*counter]] = value
+func (comp *Intcode) SetOperand(counter *int, mode int, value int) {
+	comp.Program[comp.AddressDecoder(mode, *counter)] = value
 }
 
 func (comp *Intcode) GetOperand(counter *int, mode int) int {
-	if mode == 0 {
-		return comp.Program[comp.Program[*counter]]
-	} else if mode == 1 {
-		return comp.Program[*counter]
-	} else if mode == 2 {
-		return comp.Program[*counter+comp.baseOffset]
-	} else {
-		panic("Unknown mode")
-	}
+	return comp.Program[comp.AddressDecoder(mode, *counter)]
 }
 
 func ReadProgram(fileName string) []int {
@@ -226,4 +218,17 @@ func CloneProgram(program []int, memorySize int) []int {
 	tmpProg := make([]int, memorySize)
 	copy(tmpProg, program)
 	return tmpProg
+}
+
+//Reutrns address of target cell
+func (comp *Intcode) AddressDecoder(mode int, counter int) int {
+	if mode == 0 {
+		return comp.Program[counter]
+	} else if mode == 1 {
+		return counter
+	} else if mode == 2 {
+		return comp.Program[counter] + comp.baseOffset
+	} else {
+		panic("Unknown address mode")
+	}
 }

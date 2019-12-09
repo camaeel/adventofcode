@@ -438,7 +438,7 @@ func TestIntcodeDay9RelativeAddr1(t *testing.T) {
 	fmt.Println("Program: ", program)
 	computer := CreateIntcode(program)
 
-	computer.Run(false)
+	computer.Run(true)
 	// computer.Input <- 13
 	for i := 0; i < 16; i++ {
 		_ = <-computer.Output
@@ -485,5 +485,50 @@ func TestIntcodeDay9LargeNumber2(t *testing.T) {
 
 	if computer.OutputArray[0] != program[1] {
 		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", program[1], ", \nGot: ", computer.OutputArray)
+	}
+}
+
+func TestAddresDecoderMode0(t *testing.T) {
+	program := []int{10, 20, 30, 1, 3, 99}
+	comp := CreateIntcode(program)
+	comp.baseOffset = 11
+
+	mode := 0
+	counter := 3
+	expected := 1
+
+	result := comp.AddressDecoder(mode, counter)
+	if result != expected {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", expected, "\nGot: ", result)
+	}
+}
+
+func TestAddresDecoderMode1(t *testing.T) {
+	program := []int{10, 20, 30, 1, 3, 99}
+	comp := CreateIntcode(program)
+	comp.baseOffset = 11
+
+	mode := 1
+	counter := 3
+	expected := 3
+
+	result := comp.AddressDecoder(mode, counter)
+	if result != expected {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", expected, "\nGot: ", result)
+	}
+}
+
+func TestAddresDecoderMode2(t *testing.T) {
+	program := []int{10, 20, 30, 1, 3, 99}
+	comp := CreateIntcode(program)
+	comp.baseOffset = 11
+
+	mode := 2
+	counter := 3
+	expected := 12
+
+	result := comp.AddressDecoder(mode, counter)
+	if result != expected {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", expected, "\nGot: ", result)
 	}
 }
