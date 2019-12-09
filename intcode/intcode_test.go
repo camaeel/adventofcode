@@ -7,12 +7,18 @@ import (
 )
 
 func TestCloneProgram(t *testing.T) {
-	program := []int{1, 0, 0, 0, 99}
-	tmpProg := CloneProgram(program)
+	memorySize := 10
+	program := []int{1, 0, 0, 0, 99, 0, 0, 0, 0, 0}
+	tmpProg := CloneProgram(program, memorySize)
+	if !reflect.DeepEqual(cap(tmpProg), memorySize) {
+		t.Error("Test error. \nExpected: ", cap(tmpProg), "\nGot: ", memorySize)
+	}
 	if !reflect.DeepEqual(tmpProg, program) {
 		t.Error("Test error. \nExpected: ", tmpProg, "\nGot: ", program)
 	}
-
+	if !reflect.DeepEqual(len(tmpProg), memorySize) {
+		t.Error("Test error. \nExpected: ", len(tmpProg), "\nGot: ", memorySize)
+	}
 }
 
 func TestIntcode1(t *testing.T) {
@@ -23,7 +29,7 @@ func TestIntcode1(t *testing.T) {
 	computer.Run(false)
 	computer.WaitGroup.Wait()
 	expected := []int{2, 0, 0, 0, 99}
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 }
@@ -36,7 +42,7 @@ func TestIntcode2(t *testing.T) {
 	computer.Run(false)
 	computer.WaitGroup.Wait()
 	expected := []int{2, 3, 0, 6, 99}
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 }
@@ -49,7 +55,7 @@ func TestIntcode3(t *testing.T) {
 	computer.Run(false)
 	computer.WaitGroup.Wait()
 	expected := []int{2, 4, 4, 5, 99, 9801}
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 }
@@ -62,7 +68,7 @@ func TestIntcode4(t *testing.T) {
 	computer.Run(false)
 	computer.WaitGroup.Wait()
 	expected := []int{30, 1, 1, 4, 2, 5, 6, 0, 99}
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 }
@@ -80,7 +86,7 @@ func TestIntcode5(t *testing.T) {
 
 	expected := []int{200, 0, 4, 0, 99}
 	expectedOutput := []int{200}
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 
@@ -116,7 +122,7 @@ func TestIntcode6(t *testing.T) {
 	expected := []int{1002, 4, 3, 4, 99}
 	expectedOutput := make([]int, 0)
 
-	if !reflect.DeepEqual(computer.Program, expected) {
+	if !reflect.DeepEqual(computer.Program[0:len(expected)], expected) {
 		t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", computer.Program)
 	}
 	if !reflect.DeepEqual(expectedOutput, computer.OutputArray) {
@@ -423,5 +429,61 @@ func TestIntcodeLarge3(t *testing.T) {
 	// }
 	if !reflect.DeepEqual(expectedOutput, computer.OutputArray) {
 		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", expectedOutput, "\nGot: ", computer.OutputArray)
+	}
+}
+
+func TestIntcodeDay9RelativeAddr1(t *testing.T) {
+	program := []int{109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99}
+	fmt.Println()
+	fmt.Println("Program: ", program)
+	computer := CreateIntcode(program)
+
+	computer.Run(false)
+	// computer.Input <- 13
+	for i := 0; i < 16; i++ {
+		_ = <-computer.Output
+
+	}
+
+	computer.WaitGroup.Wait()
+	expectedOutput := []int{109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99}
+	// if !reflect.DeepEqual(tmpProg, expected) {
+	// 	t.Error("Test error. Input: ", program, "\nExpected: ", expected, "\nGot: ", tmpProg)
+	// }
+	if !reflect.DeepEqual(expectedOutput, computer.OutputArray) {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", expectedOutput, "\nGot: ", computer.OutputArray)
+	}
+}
+
+func TestIntcodeDay9LargeNumber(t *testing.T) {
+	program := []int{1102, 34915192, 34915192, 7, 4, 7, 99, 0}
+	fmt.Println()
+	fmt.Println("Program: ", program)
+	computer := CreateIntcode(program)
+
+	computer.Run(false)
+	// computer.Input <- 13
+	_ = <-computer.Output
+
+	computer.WaitGroup.Wait()
+
+	if computer.OutputArray[0] < 1000000000000000 {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: > 1000000000000000, \nGot: ", computer.OutputArray)
+	}
+}
+
+func TestIntcodeDay9LargeNumber2(t *testing.T) {
+	program := []int{104, 1125899906842624, 99}
+	fmt.Println()
+	fmt.Println("Program: ", program)
+	computer := CreateIntcode(program)
+	computer.Run(false)
+	// computer.Input <- 13
+	_ = <-computer.Output
+
+	computer.WaitGroup.Wait()
+
+	if computer.OutputArray[0] != program[1] {
+		t.Error("Test error - wrong output. Input: ", program, "\nExpected: ", program[1], ", \nGot: ", computer.OutputArray)
 	}
 }

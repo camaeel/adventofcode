@@ -16,11 +16,12 @@ type Intcode struct {
 	Output      chan int
 	WaitGroup   *sync.WaitGroup
 	OutputArray []int //duplicate output
+	baseOffset  int
 }
 
 func CreateIntcode(program []int) *Intcode {
 	wg := sync.WaitGroup{}
-	ret := Intcode{Program: CloneProgram(program), Input: make(chan int, 10000), Output: make(chan int, 10000), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
+	ret := Intcode{Program: CloneProgram(program, 1000), Input: make(chan int, 10000), Output: make(chan int, 10000), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
 
 	return &ret
 }
@@ -75,9 +76,13 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		*counter++
 	case 3:
 		var input int
-		fmt.Println("Waiting for input")
+		if debug {
+			fmt.Println("Waiting for input")
+		}
 		input = <-comp.Input
-		fmt.Println("Got input")
+		if debug {
+			fmt.Println("Got input")
+		}
 		comp.SetOperand(counter, input)
 		if debug {
 			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+2], ", input=", input)
@@ -91,9 +96,13 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		}
 		*counter++
 		comp.OutputArray = append(comp.OutputArray, op1)
-		fmt.Println("Writing output")
+		if debug {
+			fmt.Println("Writing output")
+		}
 		comp.Output <- op1
-		fmt.Println("Output written")
+		if debug {
+			fmt.Println("Output written")
+		}
 
 	case 5:
 		op1 := comp.GetOperand(counter, modes[0])
@@ -147,6 +156,13 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		}
 		comp.SetOperand(counter, val)
 		*counter++
+	case 9:
+		op1 := comp.GetOperand(counter, modes[0])
+		*counter++
+		comp.baseOffset += op1
+		if debug {
+			fmt.Println("Counter:", opCounter, "Opcode=", opcode, ", modes:", modes, ", program line: ", comp.Program[opCounter:opCounter+2], ", op1=", op1, " Moving baseOffset to ", comp.baseOffset)
+		}
 	default:
 		panic("Unknown opcode: " + strconv.Itoa(opcode) + ", at counter: " + strconv.Itoa(*counter-1))
 	}
@@ -169,6 +185,8 @@ func (comp *Intcode) GetOperand(counter *int, mode int) int {
 		return comp.Program[comp.Program[*counter]]
 	} else if mode == 1 {
 		return comp.Program[*counter]
+	} else if mode == 2 {
+		return comp.Program[*counter+comp.baseOffset]
 	} else {
 		panic("Unknown mode")
 	}
@@ -204,8 +222,8 @@ func check(e error) {
 	}
 }
 
-func CloneProgram(program []int) []int {
-	tmpProg := make([]int, len(program))
+func CloneProgram(program []int, memorySize int) []int {
+	tmpProg := make([]int, memorySize)
 	copy(tmpProg, program)
 	return tmpProg
 }
