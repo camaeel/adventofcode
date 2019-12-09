@@ -15,4 +15,12 @@ func main() {
 	result := <-comp.Output
 
 	fmt.Println("Part 1:", result)
+
+	comp2 := intcode.CreateIntcode(program, 10000)
+	comp2.Run(false)
+
+	comp2.Input <- (2)
+	result2 := <-comp2.Output
+
+	fmt.Println("Part 2:", result2)
 }
