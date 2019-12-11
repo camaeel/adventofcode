@@ -148,7 +148,7 @@ func GetTargets(mapa []string, laser Point) []*Target {
 
 func CalculateAngle(laser Point, punkt Point) float64 {
 
-	angle := math.Atan2(float64(punkt.Y-laser.Y), float64(punkt.X-laser.X))*(180/math.Pi) + 90.0
+	angle := math.Atan2(float64(punkt.X-laser.X), float64(punkt.Y-laser.Y)) * (180 / math.Pi)
 	if angle < 0.0 {
 		angle += 360.0
 	}
