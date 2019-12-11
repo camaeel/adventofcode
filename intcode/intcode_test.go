@@ -438,7 +438,7 @@ func TestIntcodeDay9RelativeAddr1(t *testing.T) {
 	fmt.Println("Program: ", program)
 	computer := CreateIntcode(program, 1000)
 
-	computer.Run(true)
+	computer.Run(false)
 	// computer.Input <- 13
 	for i := 0; i < 16; i++ {
 		_ = <-computer.Output

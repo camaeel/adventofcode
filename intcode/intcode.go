@@ -21,7 +21,7 @@ type Intcode struct {
 
 func CreateIntcode(program []int, memoryLimit int) *Intcode {
 	wg := sync.WaitGroup{}
-	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: make(chan int, 10000), Output: make(chan int, 10000), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
+	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: make(chan int, memoryLimit), Output: make(chan int, memoryLimit), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
 
 	return &ret
 }
@@ -35,7 +35,7 @@ func (comp *Intcode) runAsync(debug bool) {
 	counter := 0
 	for {
 		if comp.Opcode(&counter, debug) == false {
-			close(comp.Output)
+			// close(comp.Output)
 			comp.WaitGroup.Done()
 			return
 		}
@@ -53,6 +53,7 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		if debug {
 			fmt.Println("Counter: ", opCounter, "Next opcode: ", opcode)
 		}
+		close(comp.Output)
 		return false
 	case 1:
 		op1 := comp.GetOperand(counter, modes[0])
