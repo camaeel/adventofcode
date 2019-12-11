@@ -70,6 +70,22 @@ func TestCalculateAngleUp(t *testing.T) {
 	}
 }
 
+func TestPart_0(t *testing.T) {
+	dataStr := `.#..#
+.....
+#####
+....#
+...##`
+	mapa := ParseMap(dataStr)
+	maxX, maxY, maxValue := FindBestSpot(mapa)
+	expectedMaxX, expectedMaxY, expectedValue := 3, 4, 8
+	if maxX != expectedMaxX || expectedMaxY != maxY || expectedValue != maxValue {
+		t.Error("Error. Expected maxX,maxY  : ", expectedMaxX, expectedMaxY, " Got:", maxX, maxY)
+		t.Error("Error. Expected mexpectedValue  : ", expectedValue, " Got: ", maxValue)
+	}
+	fmt.Println("maxValue=", maxValue)
+}
+
 func TestPart1(t *testing.T) {
 	dataStr := `......#.#.
 #..#.#....

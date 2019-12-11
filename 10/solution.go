@@ -133,11 +133,11 @@ func GetTargets(mapa []string, laser Point) []*Target {
 				dist1 := PointDistance(t1.P, laser)
 				dist2 := PointDistance(t2.P, laser)
 				if dist1 < dist2 {
-					t1.Visible = true
+					// t1.Visible = true
 					t2.Visible = false
 				} else {
 					t1.Visible = false
-					t2.Visible = true
+					// t2.Visible = true
 				}
 			}
 		}
@@ -206,5 +206,42 @@ func CountVisibleAsteroids(mapa []string, x int, y int) int {
 			res++
 		}
 	}
+	// fmt.Println()
+	// fmt.Println(Draw(mapa, targets, Point{X: x, Y: y}))
+	// fmt.Println("visible tgts:", res)
+	// fmt.Println()
 	return res
+}
+
+func Draw(mapa []string, targets []*Target, laser Point) string {
+	result := ""
+	w, h := MapDimensions(mapa)
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			if x == laser.X && y == laser.Y {
+				result += "X"
+			} else {
+				t := FindTarget(targets, x, y)
+				if t == nil {
+					result += "."
+				} else if t.Visible == true {
+					result += "#"
+				} else if t.Visible == false {
+					result += "+"
+				}
+			}
+		}
+		result += "\n"
+	}
+
+	return result
+}
+
+func FindTarget(targets []*Target, x int, y int) *Target {
+	for _, v := range targets {
+		if v.P.X == x && v.P.Y == y {
+			return v
+		}
+	}
+	return nil
 }
