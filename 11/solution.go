@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"../intcode"
+	"fmt"
 )
 
 type Direction int
@@ -27,13 +26,21 @@ func main() {
 	computer.Run(false)
 
 	painted := make([]*Point, 0)
-	position := Point{0, 0, 0}
+	position := Point{0, 0, 1}
 	direction := Up
+
+	minPosition := position
+	maxPosition := position
 
 	finished := false
 
 	for finished == false {
-		computer.Input <- GetColor(painted, position)
+		if len(painted) > 0 {
+			computer.Input <- GetColor(painted, position)
+		} else {
+			computer.Input <- (1)
+		}
+
 		color, result1 := <-computer.Output
 		dirCmd, result2 := <-computer.Output
 
@@ -53,6 +60,20 @@ func main() {
 				painted = append(painted, &Point{X: position.X, Y: position.Y, Color: color})
 			}
 			position, direction = Move(position, direction, dirCmd)
+
+			if position.X < minPosition.X {
+				minPosition.X = position.X
+			}
+			if position.Y < minPosition.Y {
+				minPosition.Y = position.Y
+			}
+			if position.X > maxPosition.X {
+				maxPosition.X = position.X
+			}
+			if position.Y > maxPosition.Y {
+				maxPosition.Y = position.Y
+			}
+
 		} else {
 			finished = true
 		}
@@ -60,6 +81,23 @@ func main() {
 
 	// fmt.Println("result:", computer.OutputArray)
 	fmt.Println("len result:", len(painted))
+	fmt.Println(Draw(painted, minPosition, maxPosition))
+}
+
+func Draw(painted []*Point, min Point, max Point) string {
+	result := ""
+	for y := max.Y; y >= min.Y; y-- {
+		for x := min.X; x <= max.X; x++ {
+			color := GetColor(painted, Point{X: x, Y: y})
+			if color == 1 {
+				result += "#"
+			} else {
+				result += "."
+			}
+		}
+		result += "\n"
+	}
+	return result
 }
 
 func GetColor(painted []*Point, position Point) int {
