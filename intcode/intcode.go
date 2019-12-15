@@ -19,9 +19,9 @@ type Intcode struct {
 	baseOffset  int
 }
 
-func CreateIntcode(program []int, memoryLimit int) *Intcode {
+func CreateIntcode(program []int, memoryLimit int, chanLimit int) *Intcode {
 	wg := sync.WaitGroup{}
-	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: make(chan int, memoryLimit), Output: make(chan int, memoryLimit), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
+	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: make(chan int, chanLimit), Output: make(chan int, chanLimit), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
 
 	return &ret
 }
