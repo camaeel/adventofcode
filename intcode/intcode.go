@@ -14,14 +14,23 @@ type Intcode struct {
 	Stopped     bool
 	Input       chan int
 	Output      chan int
+	InputNeeded chan int
 	WaitGroup   *sync.WaitGroup
 	OutputArray []int //duplicate output
 	baseOffset  int
+	InputSync   bool
 }
 
-func CreateIntcode(program []int, memoryLimit int, chanLimit int) *Intcode {
+func CreateIntcode(program []int, memoryLimit int, inputSync bool) *Intcode {
+	var inputChan chan int
+	if inputSync {
+		inputChan = make(chan int)
+	} else {
+		inputChan = make(chan int, memoryLimit)
+	}
+
 	wg := sync.WaitGroup{}
-	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: make(chan int, chanLimit), Output: make(chan int, chanLimit), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg}
+	ret := Intcode{Program: CloneProgram(program, memoryLimit), Input: inputChan, InputNeeded: make(chan int), Output: make(chan int, memoryLimit), Stopped: true, OutputArray: make([]int, 0), WaitGroup: &wg, InputSync: inputSync}
 
 	return &ret
 }
@@ -79,6 +88,9 @@ func (comp *Intcode) Opcode(counter *int, debug bool) bool {
 		var input int
 		if debug {
 			fmt.Println("Waiting for input")
+		}
+		if comp.InputSync {
+			comp.InputNeeded <- (1)
 		}
 		input = <-comp.Input
 		if debug {

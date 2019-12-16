@@ -25,7 +25,7 @@ type Tile struct {
 func main() {
 	program := intcode.ReadProgram("input.txt")
 	program[0] = 2 // start game part 2
-	computer := intcode.CreateIntcode(program, 10000, 100000)
+	computer := intcode.CreateIntcode(program, 10000, true)
 
 	computer.Run(false)
 
@@ -34,47 +34,58 @@ func main() {
 
 	score := 0
 
+	buffer := make([]int, 0)
+
 	for working == true {
-		var type1, x, y int
-		x, working = <-computer.Output
-		y, working = <-computer.Output
-		type1, working = <-computer.Output
-		// computer.Input <- 0
-		found := false
-		fmt.Println("X:", x, " Y:", y, " Type:", type1)
 
-		// ball := FindTileByType(tiles, Ball)
-		// paddle := FindTileByType(tiles, Paddle)
-		// if ball.X >= 0 && paddle.X >= 0 {
-		// 	if ball.X < paddle.X {
-		// 		computer.Input <- -1
-		// 		fmt.Println("command:", -1)
-		// 	} else if ball.X > paddle.X {
-		// 		computer.Input <- 1
-		// 		fmt.Println("command:", 1)
-		// 	} else {
-		// 		computer.Input <- 0
-		// 		fmt.Println("command:", 0)
-		// 	}
-		// }
+		select {
+		case c, working := <-computer.Output:
+			if working == false {
+				break
+			}
 
-		if x == -1 && y == 0 {
-			score = type1
-		} else {
-			for i, v := range tiles {
-				if x == v.X && y == v.Y {
-					tiles[i].Type = TileType(type1)
-					found = true
-					break
+			buffer = append(buffer, c)
+
+			if len(buffer) == 3 {
+
+				x, y, type1 := buffer[0], buffer[1], buffer[2]
+				found := false
+				if x == -1 && y == 0 {
+					score = type1
+				} else {
+					for i, v := range tiles {
+						if x == v.X && y == v.Y {
+							tiles[i].Type = TileType(type1)
+							found = true
+							break
+						}
+					}
+					if found == false {
+						tiles = append(tiles, Tile{X: x, Y: y, Type: TileType(type1)})
+					}
 				}
+				//empty buffer
+				buffer = make([]int, 0)
 			}
-			if found == false {
-				tiles = append(tiles, Tile{X: x, Y: y, Type: TileType(type1)})
+
+		case <-computer.InputNeeded:
+			ball := FindTileByType(tiles, Ball)
+			paddle := FindTileByType(tiles, Paddle)
+			decision := 0
+			if ball.X < paddle.X {
+				decision = -1
+			} else if ball.X > paddle.X {
+				decision = 1
 			}
+			fmt.Println("Draw")
+			fmt.Println(Draw(tiles, score))
+			computer.Input <- decision
+			fmt.Println("Decision:", decision)
+			//make decision
+			//publish move
 		}
 
 	}
-	// fmt.Println(tiles)
 
 	blocks := 0
 	for _, v := range tiles {
