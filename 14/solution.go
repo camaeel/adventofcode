@@ -39,31 +39,37 @@ func ParseReactions(input string) []Reaction {
 func CalculateOreForReaction(reactions []Reaction, result Reagent) int {
 	resultsQueue := make([]Reagent, 0)
 	resultsQueue = append(resultsQueue, result)
+	ore := 0
 
-	for !(len(resultsQueue) == 1 && resultsQueue[0].Name == "ORE") {
+	for len(resultsQueue) != 0 {
 		result := resultsQueue[0]
 		resultsQueue = resultsQueue[1:]
 		reaction := FindReactionByResultName(reactions, result.Name)
 		reactionNumber := int(math.Ceil(float64(result.Quantity) / float64(reaction.Result.Quantity)))
 
-		for _, ingredient := range reaction.Ingredients {
-			resultFound := false
-			for i, v := range resultsQueue {
-				if v.Name == ingredient.Name {
-					resultsQueue[i].Quantity += ingredient.Quantity * reactionNumber
-					resultFound = true
-					break
+		if len(reaction.Ingredients) == 1 && reaction.Ingredients[0].Name == "ORE" {
+			ore += reactionNumber * reaction.Ingredients[0].Quantity
+		} else {
+
+			for _, ingredient := range reaction.Ingredients {
+				resultFound := false
+				for i, v := range resultsQueue {
+					if v.Name == ingredient.Name {
+						resultsQueue[i].Quantity += ingredient.Quantity * reactionNumber
+						resultFound = true
+						break
+					}
 				}
-			}
-			if resultFound == false {
-				resultsQueue = append(resultsQueue, Reagent{Name: ingredient.Name, Quantity: ingredient.Quantity * reactionNumber})
+				if resultFound == false {
+					resultsQueue = append(resultsQueue, Reagent{Name: ingredient.Name, Quantity: ingredient.Quantity * reactionNumber})
+				}
 			}
 		}
 
 	}
 
-	fmt.Println(resultsQueue)
-	return resultsQueue[0].Quantity
+	fmt.Println("result queue", resultsQueue)
+	return ore
 
 }
 
