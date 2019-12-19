@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"../intcode"
 )
@@ -12,8 +13,8 @@ func main() {
 	w, h := 50, 50
 	arr := make([]string, h)
 
-	for x := 0; x < w; x++ {
-		for y := 0; y < h; y++ {
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
 			comp := intcode.CreateIntcode(PuzzleInput(), 10000, false)
 			comp.Run(false)
 			comp.Input <- x
@@ -32,6 +33,39 @@ func main() {
 		}
 	}
 
+	w, h = 10000, 10000
+	shipSize := 100
+	fmt.Println("phase 2")
+	for y := 0; y < h; y++ {
+		found := false
+		for x := 0; x < w; x++ {
+			if x == 0 && y%5 == 0 {
+				fmt.Println(x, y)
+			}
+			if InBeam(x, y) {
+				found = true
+				if InBeam(x+shipSize-1, y) && InBeam(x, y+shipSize-1) {
+					fmt.Println("Found:", x, y)
+					fmt.Println("Result:", x*10000+y)
+
+					os.Exit(0)
+				}
+			} else {
+				if found {
+					break
+				}
+			}
+		}
+	}
+}
+
+func InBeam(x int, y int) bool {
+	comp := intcode.CreateIntcode(PuzzleInput(), 10000, false)
+	comp.Run(false)
+	comp.Input <- x
+	comp.Input <- y
+	out := <-comp.Output
+	return (out == 1)
 }
 
 func PuzzleInput() []int {
