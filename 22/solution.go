@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,41 +9,22 @@ import (
 
 func main() {
 	input, size := PuzzleInput()
-	deck := OpenDeck(size)
-	result := Shuffle(deck, input)
 	searchFor := 2019
-	for i, v := range result {
-		if v == searchFor {
-			fmt.Println("Phase1: ", i)
-			break
-		}
-	}
+	result := Shuffle(size, searchFor, input)
+	fmt.Println(result)
 }
 
-func DealIntoNewStack(deck []int) []int {
-	res := make([]int, len(deck))
-
-	for i := 0; i <= int(math.Ceil(float64(len(deck))/2.0)); i++ {
-		res[i], res[len(deck)-1-i] = deck[len(deck)-1-i], deck[i]
-	}
-	return res
+func DealIntoNewStack(length int, tracked int) int {
+	return length - tracked - 1
 }
 
-func Cut(deck []int, param int) []int {
-	res := make([]int, len(deck))
-	for i := 0; i < len(deck); i++ {
-		res[i] = deck[(i+param+len(deck))%len(deck)]
-	}
-	return res
+// 10,5,3 = 2
+func Cut(length int, tracked int, param int) int {
+	return ((tracked - param + length) % length)
 }
 
-func DealWithIncrement(deck []int, param int) []int {
-	res := make([]int, len(deck))
-
-	for i, v := range deck {
-		res[(i*param)%len(deck)] = v
-	}
-	return res
+func DealWithIncrement(length int, tracked int, param int) int {
+	return (tracked * param) % length
 
 }
 
@@ -57,19 +37,18 @@ func OpenDeck(size int) []int {
 	return res
 }
 
-func Shuffle(deck []int, input string) []int {
+func Shuffle(length int, tracked int, input string) int {
 	cmds := strings.Split(input, "\n")
-	res := cloneArr(deck)
 
 	for _, v := range cmds {
-		res = ExecuteOrder(res, v)
+		tracked = ExecuteOrder(length, tracked, v)
 	}
-	return res
+	return tracked
 }
 
-func ExecuteOrder(deck []int, cmd string) []int {
+func ExecuteOrder(length int, tracked int, cmd string) int {
 	if cmd == "deal into new stack" {
-		return DealIntoNewStack(deck)
+		return DealIntoNewStack(length, tracked)
 	} else {
 		matched, err := regexp.MatchString(`^cut -?\d+$`, cmd)
 		if matched == true && err == nil {
@@ -77,14 +56,14 @@ func ExecuteOrder(deck []int, cmd string) []int {
 			re := regexp.MustCompile(` (-?\d+)$`)
 			paramStr := re.FindString(cmd)
 			param, _ := strconv.Atoi(strings.Trim(paramStr, " "))
-			return Cut(deck, param)
+			return Cut(length, tracked, param)
 		} else {
 			matched, err := regexp.MatchString(`^deal with increment -?\d+$`, cmd)
 			if matched == true && err == nil {
 				re := regexp.MustCompile(` (-?\d+)$`)
 				paramStr := re.FindString(cmd)
 				param, _ := strconv.Atoi(strings.Trim(paramStr, " "))
-				return DealWithIncrement(deck, param)
+				return DealWithIncrement(length, tracked, param)
 			} else {
 				panic("wrong input")
 			}
@@ -92,13 +71,6 @@ func ExecuteOrder(deck []int, cmd string) []int {
 
 	}
 
-	return deck
-}
-
-func cloneArr(program []int) []int {
-	tmpProg := make([]int, len(program))
-	copy(tmpProg, program)
-	return tmpProg
 }
 
 func PuzzleInput() (string, int) {
