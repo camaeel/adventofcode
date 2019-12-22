@@ -12,19 +12,45 @@ func main() {
 	searchFor := 2019
 	result := Shuffle(size, searchFor, input)
 	fmt.Println(result)
+
+	// deck := 119315717514047
+	// iter := 101741582076661
+	// resultPos := 2020
+
 }
 
 func DealIntoNewStack(length int, tracked int) int {
 	return length - tracked - 1
 }
 
-// 10,5,3 = 2
 func Cut(length int, tracked int, param int) int {
 	return ((tracked - param + length) % length)
 }
 
+func CutReversed(length int, tracked int, param int) int {
+	return ((tracked + param + length) % length)
+}
+
 func DealWithIncrement(length int, tracked int, param int) int {
 	return (tracked * param) % length
+
+}
+
+0123456789 /3
+0741852963
+
+0123456789 /4
+0 3 1 4 2   
+
+= i % 3 + i /3
+
+x=y/3
+
+
+
+func DealWithIncrementReversed(length int, tracked int, param int) int {
+	// return (tracked * param) % length
+	return 0
 
 }
 
@@ -64,6 +90,33 @@ func ExecuteOrder(length int, tracked int, cmd string) int {
 				paramStr := re.FindString(cmd)
 				param, _ := strconv.Atoi(strings.Trim(paramStr, " "))
 				return DealWithIncrement(length, tracked, param)
+			} else {
+				panic("wrong input")
+			}
+		}
+
+	}
+
+}
+
+func ExecuteOrderReversed(length int, tracked int, cmd string) int {
+	if cmd == "deal into new stack" {
+		return DealIntoNewStack(length, tracked)
+	} else {
+		matched, err := regexp.MatchString(`^cut -?\d+$`, cmd)
+		if matched == true && err == nil {
+
+			re := regexp.MustCompile(` (-?\d+)$`)
+			paramStr := re.FindString(cmd)
+			param, _ := strconv.Atoi(strings.Trim(paramStr, " "))
+			return CutReversed(length, tracked, param)
+		} else {
+			matched, err := regexp.MatchString(`^deal with increment -?\d+$`, cmd)
+			if matched == true && err == nil {
+				re := regexp.MustCompile(` (-?\d+)$`)
+				paramStr := re.FindString(cmd)
+				param, _ := strconv.Atoi(strings.Trim(paramStr, " "))
+				return DealWithIncrementReversed(length, tracked, param)
 			} else {
 				panic("wrong input")
 			}
