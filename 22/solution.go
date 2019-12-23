@@ -13,10 +13,24 @@ func main() {
 	result := Shuffle(size, searchFor, input)
 	fmt.Println(result)
 
-	// deck := 119315717514047
-	// iter := 101741582076661
-	// resultPos := 2020
+	deck := 119315717514047
+	iter := 101741582076661
+	resultPos := 2020
 
+	cmds := strings.Split(input, "\n")
+
+	result2 := resultPos
+	for i := 0; i < iter; i++ {
+		if i%1000000000 == 0 {
+			fmt.Println("iter: ", i)
+		}
+		for cmdI := len(cmds) - 1; cmdI >= 0; cmdI-- {
+			result2 = ExecuteOrder(deck, result2, cmds[cmdI])
+		}
+
+	}
+
+	fmt.Println("ph2:", result2)
 }
 
 func DealIntoNewStack(length int, tracked int) int {
@@ -36,21 +50,32 @@ func DealWithIncrement(length int, tracked int, param int) int {
 
 }
 
-0123456789 /3
-0741852963
+// 0123456789 /3
+// 0741852963
 
-0123456789 /4
-0 3 1 4 2   
+// 10 mod 3 = 1
 
-= i % 3 + i /3
+// 0123456789X /4
+// 0369147X258
 
-x=y/3
+// len%p > 11 mod 4 = 3
+// 10 -> 8
+// 1 -> 3
+// 2 -> 6
+// 3 -> 9
+// 4 -> 1
 
-
+// y= (x * param) % length
+// y + a * len = x * param
 
 func DealWithIncrementReversed(length int, tracked int, param int) int {
-	// return (tracked * param) % length
-	return 0
+	for i := 0; i <= param; i++ {
+		if ((tracked + i*length) % param) == 0 {
+			return (tracked + i*length) / param
+		}
+	}
+
+	panic("not found")
 
 }
 
