@@ -23,3 +23,16 @@ func TestProgressTime(t *testing.T) {
 	}
 
 }
+
+func TestCalucalteBiodiv(t *testing.T) {
+	input := `.....
+.....
+.....
+#....
+.#...`
+	expected := 2129920
+	result := CalculateBiodiversity(input)
+	if result != expected {
+		t.Error("Wrong result. Got:", result, ", expected: ", expected)
+	}
+}

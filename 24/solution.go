@@ -1,11 +1,30 @@
 package main
 
 import (
+	"fmt"
+	"math"
 	"strings"
 )
 
 func main() {
+	bugMaps := make([]string, 0)
+	bugs := PuzzleInput()
+	bugMaps = append(bugMaps, strings.Trim(bugs, "\n"))
 
+	found := false
+	for found == false {
+		bugs = strings.Trim(ProgressTime(bugs), "\n")
+		for _, v := range bugMaps {
+			if bugs == v {
+				found = true
+				fmt.Println("cases: ", len(bugMaps))
+				break
+			}
+		}
+		bugMaps = append(bugMaps, strings.Trim(bugs, "\n"))
+	}
+	fmt.Println("Dupliaated map: ", bugs)
+	fmt.Println("biodiversity: ", CalculateBiodiversity(bugs))
 }
 
 func PuzzleInput() string {
@@ -14,6 +33,18 @@ func PuzzleInput() string {
 #...#
 ##.#.
 ####.`
+}
+
+func CalculateBiodiversity(bugs string) int {
+	result := 0
+	bugs = strings.ReplaceAll(bugs, " ", "")
+	bugs = strings.ReplaceAll(bugs, "\n", "")
+	for i, v := range bugs {
+		if v == '#' {
+			result += int(math.Pow(2.0, float64(i)))
+		}
+	}
+	return result
 }
 
 func ProgressTime(input string) string {
